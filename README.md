@@ -1,0 +1,2 @@
+# Course Available Checker
+This is my own version of Cornell's CourseGrab but made so that I can make my own adjustments significantly easier. It uses the Twilio API to send text messages instead of emails and such.
