@@ -9,7 +9,25 @@ from sendgrid.helpers.mail import Mail
 import os
 load_dotenv()
 
-pnumber = os.environ["PHONE_NUMBER"]
+PNUMBER = os.environ["PHONE_NUMBER"]
+EMAIL = os.environ["EMAIL"]
+
+def send_email(dept, course_num, cStatus):
+  message = Mail(
+      from_email=EMAIL,
+      to_emails=EMAIL,
+      subject=f'{dept} {course_num} is {cStatus}',
+      html_content=f'{dept} {course_num} is {cStatus}')
+  try:
+      sg = SendGridAPIClient(os.environ.get('SENDGRID_API_KEY'))
+      response = sg.send(message)
+      print(response.status_code)
+      print(response.body)
+      print(response.headers)
+  except Exception as e:
+      print(e.message)
+
+
 
 # Set environment variables for your credentials
 # Read more at http://twil.io/secure
@@ -61,7 +79,7 @@ def find_from_option(is_lec, num, season, dept, course_num):
       message = client.messages.create(
         body=f"{dept} {course_num} is {cStatus}",
         from_="+18777804236",
-        to=f"{pnumber}"
+        to=f"{PNUMBER}"
       )
       
       print(message.sid)
@@ -93,21 +111,8 @@ def find_from_option_email(is_lec, num, season, dept, course_num):
     
     cStatus = section.attrs['data-content']
     
-    if cStatus == 'Open' or cStatus == 'Waitlist' or cStatus == 'Closed':
-      message = Mail(
-          from_email='davidlilienfeld4@gmail.com',
-          to_emails='davidlilienfeld4@gmail.com',
-          subject=f'{dept} {course_num} is {cStatus}',
-          html_content=f'{dept} {course_num} is {cStatus}')
-      try:
-          sg = SendGridAPIClient(os.environ.get('SENDGRID_API_KEY'))
-          response = sg.send(message)
-          print(response.status_code)
-          print(response.body)
-          print(response.headers)
-      except Exception as e:
-          print(e.message)
-      
+    if cStatus == 'Open' or cStatus == 'Waitlist':
+      send_email(dept, course_num, cStatus)
       value = False
       break
     sleep(600)
